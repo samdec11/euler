@@ -10,11 +10,12 @@ def run
   while x <= 4000000
     fib << x
     if x > 2
-      i = fib.find_index(x)
-      x = fib[i] + fib[i-1]
+      x += fib[-2]
     else
       x += 1
     end
   end
   fib.inject(0){|sum, num| num % 2 == 0 ? sum += num : sum}
 end
+
+# 4613732

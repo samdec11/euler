@@ -4,5 +4,7 @@
 # Find the sum of all the multiples of 3 or 5 below 1000.
 
 def run
-  (0...1000).inject(0){|sum, num| (num % 3 == 0 || num % 5 == 0) ? sum += num : sum }
+  (3...1000).inject(0){|sum, num| (num % 3 == 0 || num % 5 == 0) ? sum += num : sum }
 end
+
+# 233168
