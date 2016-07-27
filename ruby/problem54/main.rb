@@ -48,23 +48,7 @@ class Hand
     sorted_cards.each_with_index do |card, index|
       next_card = sorted_cards[index + 1]
       break if next_card.nil?
-
-      straight =  case card.number
-                  when 'T'
-                    next_card.number == 'J'
-                  when 'J'
-                    next_card.number == 'Q'
-                  when 'Q'
-                    next_card.number == 'K'
-                  when 'K'
-                    next_card.number == 'A'
-                  when 'A'
-                    false
-                  when '9'
-                    next_card.number == 'T'
-                  else
-                    card.number.next == next_card.number
-                  end
+      straight = card.number.next == next_card.number
       break unless straight
     end
     straight
@@ -90,15 +74,17 @@ class Hand
     straight_flush? && cards.all?(&:face?)
   end
 
-  def group_by_num_counts(card_count, result_size=1)
-    cards.group_by(&:number).select{|num, cards| cards.count == card_count}.count == result_size
-  end
-
   def find_card_value
     hsh = cards.group_by(&:number).select{|num, cards| cards.count > 1}
     return if hsh.nil?
     # return the first card in the set of the biggest number of matching cards
     hsh.sort_by{|num, cards| cards.count}.reverse[0][1][0]
+  end
+
+  private
+
+  def group_by_num_counts(card_count, result_size=1)
+    cards.group_by(&:number).select{|num, cards| cards.count == card_count}.count == result_size
   end
 end
 
@@ -106,68 +92,31 @@ class Card
   include Comparable
   attr_reader :number, :suit
 
+  MAPPINGS = {
+    'T' => 10,
+    'J' => 11,
+    'Q' => 12,
+    'K' => 13,
+    'A' => 14
+  }.freeze
+
   def initialize(str)
     determine_number_and_suit(str)
   end
 
   def face?
-    number.to_i.zero?
+    number >= 10
   end
 
+  private
+
   def <=>(other)
-    if face? && other.face?
-      case number
-      when 'T'
-        if other.number == 'T'
-          0
-        else
-          -1
-        end
-      when 'J'
-        case other.number
-        when 'T'
-          1
-        when 'J'
-          0
-        else
-          -1
-        end
-      when 'Q'
-        case other.number
-        when 'T', 'J'
-          1
-        when 'Q'
-          0
-        else
-          -1
-        end
-      when 'K'
-        case other.number
-        when 'T', 'J', 'Q'
-          1
-        when 'K'
-          0
-        else
-          -1
-        end
-      when 'A'
-        if other.number == 'A'
-          0
-        else
-          1
-        end
-      end
-    elsif face? && !other.face?
-      1
-    elsif !face? && other.face?
-      -1
-    else
-      number <=> other.number
-    end
+    number <=> other.number
   end
 
   def determine_number_and_suit(string)
     @number, @suit = string.split('')
+    @number = MAPPINGS[@number] || @number.to_i
   end
 end
 

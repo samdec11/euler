@@ -5,15 +5,12 @@
 # By considering the terms in the Fibonacci sequence whose values do not exceed four million, find the sum of the even-valued terms.
 
 def run
-  fib = []
-  x = 1
-  while x <= 4000000
+  max = 4000000
+  fib = [1, 2]
+  x = 3
+  while x <= max
     fib << x
-    if x > 2
-      x += fib[-2]
-    else
-      x += 1
-    end
+    x += fib[-2]
   end
   fib.inject(0){|sum, num| num % 2 == 0 ? sum += num : sum}
 end
